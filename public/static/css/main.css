@@ -5,7 +5,13 @@
 ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
 
-body { background: #0a0a1a; }
+body { background: #0a0a1a; overflow-x: hidden; }
+
+/* Page content smooth transition */
+#page-content {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  will-change: opacity, transform;
+}
 
 .nav-item {
   display: flex; align-items: center; gap: 12px;

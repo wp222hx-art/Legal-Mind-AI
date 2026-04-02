@@ -154,7 +154,7 @@ function render_home(data) {
           { icon: 'fa-gavel', name: '模拟法庭', desc: 'AI角色扮演·沉浸式辩论训练', color: 'from-red-500/20 to-orange-500/20', page: 'moot-court' },
           { icon: 'fa-briefcase', name: '实习就业', desc: 'AI简历·岗位匹配·面试模拟', color: 'from-cyan-500/20 to-sky-500/20', page: 'career' },
         ].map(m => `
-          <a href="/${m.page}" class="nav-item-module block p-4 rounded-xl bg-gradient-to-br ${m.color} border border-white/5 hover:border-white/15 transition-all cursor-pointer group" data-page="${m.page}" onclick="event.preventDefault();currentPage='${m.page}';history.pushState({page:'${m.page}'},'','/${m.page}');updateActiveNav();loadPage('${m.page}');">
+          <a href="/${m.page}" class="nav-item-module block p-4 rounded-xl bg-gradient-to-br ${m.color} border border-white/5 hover:border-white/15 transition-all cursor-pointer group" data-page="${m.page}" onclick="event.preventDefault();navigateTo('${m.page}','/${m.page}');">
             <div class="flex items-center gap-3 mb-2">
               <i class="fas ${m.icon} text-lg opacity-60 group-hover:opacity-100 transition-opacity"></i>
               <span class="font-medium text-sm">${m.name}</span>

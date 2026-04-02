@@ -441,11 +441,26 @@ const mainLayout = (title: string, page: string) => `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title} - Legal-Mind AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>&#x2696;</text></svg>">
+  <!-- Critical: inline base styles to prevent FOUC -->
+  <style>
+    html,body{margin:0;padding:0;background:#0a0a1a;color:#f3f4f6;font-family:Inter,'Noto Sans SC',system-ui,-apple-system,sans-serif;min-height:100vh;}
+    #app-loader{position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.3s ease;}
+    #app-loader .spinner{width:40px;height:40px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;}
+    #app-loader.loaded{opacity:0;pointer-events:none;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #app{opacity:0;transition:opacity 0.35s ease;}
+    #app.ready{opacity:1;}
+  </style>
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Main CSS first -->
   <link href="/static/css/main.css" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -460,8 +475,13 @@ const mainLayout = (title: string, page: string) => `
       }
     }
   </script>
+  <!-- Non-blocking: fonts and icons loaded async -->
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
 <body class="bg-dark-950 text-gray-100 font-sans min-h-screen">
+  <!-- Loading screen: covers page until everything ready -->
+  <div id="app-loader"><div class="spinner"></div></div>
   <div id="app">
     <!-- Sidebar -->
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-dark-900/80 backdrop-blur-xl border-r border-white/5 z-50 flex flex-col transition-transform duration-300">
@@ -539,6 +559,16 @@ const mainLayout = (title: string, page: string) => `
   <!-- Overlay for mobile sidebar -->
   <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
+  <!-- Chart.js loaded async, non-blocking -->
+  <script>
+    (function(){
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+      s.async=true;
+      s.onload=function(){window._chartReady=true;if(window._pendingChartInit)window._pendingChartInit();};
+      document.head.appendChild(s);
+    })();
+  </script>
   <script src="/static/js/router.js"></script>
   <script src="/static/js/charts.js"></script>
   <script src="/static/js/pages/home.js"></script>

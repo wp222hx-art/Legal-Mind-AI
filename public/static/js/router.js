@@ -1,11 +1,45 @@
-// Router - SPA-like navigation
+// Router - SPA-like navigation (Anti-flicker version)
 let currentPage = 'home';
 const pageCache = {};
 
 function initRouter(initialPage) {
   currentPage = initialPage;
   updateActiveNav();
-  loadPage(currentPage);
+
+  // Prefetch all API data immediately so page switches are instant
+  const apiMap = {
+    'home': '/api/dashboard',
+    'agent': '/api/agent',
+    'rag': '/api/rag',
+    'vector_db': '/api/vector-db',
+    'knowledge_graph': '/api/knowledge-graph',
+    'learning': '/api/learning',
+    'thesis': '/api/thesis',
+    'moot_court': '/api/moot-court',
+    'career': '/api/career',
+  };
+
+  // Load current page first, then prefetch others
+  const currentKey = currentPage.replace(/-/g, '_');
+  const currentUrl = apiMap[currentKey];
+
+  if (currentUrl) {
+    fetch(currentUrl)
+      .then(r => r.json())
+      .then(data => {
+        pageCache[currentKey] = data;
+        renderPage(currentPage, data);
+        revealApp();
+        // Prefetch other pages in background
+        prefetchAll(apiMap, currentKey);
+      })
+      .catch(() => {
+        renderPage(currentPage, null);
+        revealApp();
+      });
+  } else {
+    revealApp();
+  }
 
   // Handle navigation clicks
   document.querySelectorAll('.nav-item').forEach(link => {
@@ -13,12 +47,8 @@ function initRouter(initialPage) {
       e.preventDefault();
       const page = link.dataset.page;
       if (page !== currentPage) {
-        currentPage = page;
-        history.pushState({ page }, '', link.href);
-        updateActiveNav();
-        loadPage(page);
+        navigateTo(page, link.href);
       }
-      // Close mobile sidebar
       if (window.innerWidth < 1024) toggleSidebar();
     });
   });
@@ -28,7 +58,87 @@ function initRouter(initialPage) {
     if (e.state && e.state.page) {
       currentPage = e.state.page;
       updateActiveNav();
-      loadPage(currentPage);
+      const key = currentPage.replace(/-/g, '_');
+      renderPage(currentPage, pageCache[key] || null);
+    }
+  });
+}
+
+function revealApp() {
+  // Remove loading spinner, show app
+  const loader = document.getElementById('app-loader');
+  const app = document.getElementById('app');
+  if (loader) loader.classList.add('loaded');
+  if (app) app.classList.add('ready');
+  // Remove loader from DOM after animation
+  setTimeout(() => { if (loader) loader.remove(); }, 400);
+}
+
+function navigateTo(page, href) {
+  const container = document.getElementById('page-content');
+  const key = page.replace(/-/g, '_');
+  
+  // Smooth transition: fade out → swap → fade in
+  container.style.opacity = '0';
+  container.style.transform = 'translateY(6px)';
+  
+  setTimeout(() => {
+    currentPage = page;
+    history.pushState({ page }, '', href);
+    updateActiveNav();
+    
+    const data = pageCache[key];
+    if (data) {
+      renderPage(page, data);
+    } else {
+      // Rare case: data not prefetched yet
+      const apiMap = {
+        'home': '/api/dashboard', 'agent': '/api/agent', 'rag': '/api/rag',
+        'vector_db': '/api/vector-db', 'knowledge_graph': '/api/knowledge-graph',
+        'learning': '/api/learning', 'thesis': '/api/thesis',
+        'moot_court': '/api/moot-court', 'career': '/api/career',
+      };
+      fetch(apiMap[key]).then(r => r.json()).then(d => {
+        pageCache[key] = d;
+        renderPage(page, d);
+      });
+    }
+    
+    // Fade in
+    requestAnimationFrame(() => {
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
+    });
+  }, 150); // Brief fade-out duration
+}
+
+function renderPage(page, data) {
+  const container = document.getElementById('page-content');
+  const key = page.replace(/-/g, '_');
+  const renderer = window[`render_${key}`];
+  
+  if (renderer && data) {
+    container.innerHTML = renderer(data);
+    // Init charts - handle async Chart.js loading
+    const chartInit = window[`initCharts_${key}`];
+    if (chartInit) {
+      if (window._chartReady) {
+        setTimeout(() => chartInit(data), 30);
+      } else {
+        window._pendingChartInit = () => {
+          setTimeout(() => chartInit(data), 30);
+        };
+      }
+    }
+  } else if (renderer) {
+    container.innerHTML = '<div class="flex items-center justify-center h-64"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+  }
+}
+
+function prefetchAll(apiMap, skipKey) {
+  Object.entries(apiMap).forEach(([key, url]) => {
+    if (key !== skipKey && !pageCache[key]) {
+      fetch(url).then(r => r.json()).then(d => { pageCache[key] = d; }).catch(() => {});
     }
   });
 }
@@ -37,43 +147,6 @@ function updateActiveNav() {
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.page === currentPage);
   });
-}
-
-async function loadPage(page) {
-  const container = document.getElementById('page-content');
-  container.innerHTML = '<div class="flex items-center justify-center h-64"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
-  
-  try {
-    const renderer = window[`render_${page.replace(/-/g, '_')}`];
-    if (renderer) {
-      const apiMap = {
-        'home': '/api/dashboard',
-        'agent': '/api/agent',
-        'rag': '/api/rag',
-        'vector_db': '/api/vector-db',
-        'knowledge_graph': '/api/knowledge-graph',
-        'learning': '/api/learning',
-        'thesis': '/api/thesis',
-        'moot_court': '/api/moot-court',
-        'career': '/api/career',
-      };
-      const key = page.replace(/-/g, '_');
-      const apiUrl = apiMap[key];
-      let data = pageCache[key];
-      if (!data && apiUrl) {
-        const resp = await fetch(apiUrl);
-        data = await resp.json();
-        pageCache[key] = data;
-      }
-      container.innerHTML = renderer(data);
-      // Init charts after render
-      const chartInit = window[`initCharts_${key}`];
-      if (chartInit) setTimeout(() => chartInit(data), 50);
-    }
-  } catch (err) {
-    console.error('Page load error:', err);
-    container.innerHTML = '<div class="text-center py-20 text-gray-500">页面加载失败</div>';
-  }
 }
 
 function toggleSidebar() {
