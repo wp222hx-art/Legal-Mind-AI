@@ -1,13 +1,14 @@
-// Chart utility functions
+// Chart utility functions — Light Theme
 function createChart(canvasId, config) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
   const existing = Chart.getChart(canvas);
   if (existing) existing.destroy();
   
-  Chart.defaults.color = '#9ca3af';
-  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = '#f1f5f9';
   Chart.defaults.font.family = 'Inter, Noto Sans SC, sans-serif';
+  Chart.defaults.font.size = 11;
   
   return new Chart(canvas, config);
 }
@@ -20,16 +21,16 @@ function lineChartConfig(labels, datasets) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: datasets.length > 1, labels: { boxWidth: 12, padding: 16 } } },
+      plugins: { legend: { display: datasets.length > 1, labels: { boxWidth: 12, padding: 16, usePointStyle: true } } },
       scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
+        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+        y: { grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { color: '#94a3b8', font: { size: 11 } } }
       }
     }
   };
 }
 
-function barChartConfig(labels, data, color = 'rgba(59,130,246,0.6)') {
+function barChartConfig(labels, data, color = 'rgba(37,99,235,0.7)') {
   return {
     type: 'bar',
     data: {
@@ -47,8 +48,8 @@ function barChartConfig(labels, data, color = 'rgba(59,130,246,0.6)') {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
+        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+        y: { grid: { color: '#f1f5f9' }, beginAtZero: true, ticks: { color: '#94a3b8' } }
       }
     }
   };
@@ -64,9 +65,9 @@ function doughnutChartConfig(labels, data, colors) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
+      cutout: '68%',
       plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } }
+        legend: { position: 'right', labels: { boxWidth: 10, padding: 10, usePointStyle: true, font: { size: 11 } } }
       }
     }
   };
@@ -80,12 +81,12 @@ function radarChartConfig(labels, data, label = '') {
       datasets: [{
         label,
         data,
-        backgroundColor: 'rgba(59,130,246,0.15)',
-        borderColor: 'rgba(59,130,246,0.6)',
+        backgroundColor: 'rgba(37,99,235,0.08)',
+        borderColor: 'rgba(37,99,235,0.5)',
         borderWidth: 2,
-        pointBackgroundColor: '#3b82f6',
+        pointBackgroundColor: '#2563eb',
         pointBorderColor: '#fff',
-        pointBorderWidth: 1,
+        pointBorderWidth: 2,
         pointRadius: 4,
       }]
     },
@@ -96,10 +97,10 @@ function radarChartConfig(labels, data, label = '') {
         r: {
           beginAtZero: true,
           max: 100,
-          grid: { color: 'rgba(255,255,255,0.06)' },
-          angleLines: { color: 'rgba(255,255,255,0.06)' },
-          pointLabels: { font: { size: 11 } },
-          ticks: { display: false }
+          grid: { color: '#f1f5f9' },
+          angleLines: { color: '#f1f5f9' },
+          pointLabels: { font: { size: 11 }, color: '#64748b' },
+          ticks: { display: false, stepSize: 20 }
         }
       },
       plugins: { legend: { display: false } }
@@ -107,7 +108,7 @@ function radarChartConfig(labels, data, label = '') {
   };
 }
 
-function scoreRingSVG(score, max = 100, size = 120, color1 = '#3b82f6', color2 = '#d946ef') {
+function scoreRingSVG(score, max = 100, size = 120, color1 = '#2563eb', color2 = '#60a5fa') {
   const r = (size - 12) / 2;
   const c = Math.PI * 2 * r;
   const pct = score / max;
@@ -120,10 +121,10 @@ function scoreRingSVG(score, max = 100, size = 120, color1 = '#3b82f6', color2 =
             <stop offset="100%" style="stop-color:${color2}"/>
           </linearGradient>
         </defs>
-        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#f1f5f9" stroke-width="8"/>
         <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#scoreGrad_${score})" stroke-width="8" 
           stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}" stroke-linecap="round"/>
       </svg>
-      <div class="value gradient-text">${score}</div>
+      <div class="value" style="color:#1e293b">${score}</div>
     </div>`;
 }

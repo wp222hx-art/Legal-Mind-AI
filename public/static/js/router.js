@@ -165,10 +165,10 @@ function formatNumber(num) {
 }
 
 function getHeatColor(value) {
-  if (value >= 90) return 'bg-emerald-500/80 text-white';
-  if (value >= 80) return 'bg-emerald-600/50 text-emerald-100';
-  if (value >= 70) return 'bg-blue-500/50 text-blue-100';
-  if (value >= 60) return 'bg-yellow-500/40 text-yellow-100';
-  if (value >= 50) return 'bg-orange-500/40 text-orange-100';
-  return 'bg-red-500/30 text-red-200';
+  if (value >= 90) return 'bg-emerald-500 text-white';
+  if (value >= 80) return 'bg-emerald-400 text-white';
+  if (value >= 70) return 'bg-blue-400 text-white';
+  if (value >= 60) return 'bg-amber-300 text-amber-900';
+  if (value >= 50) return 'bg-orange-300 text-orange-900';
+  return 'bg-red-300 text-red-900';
 }

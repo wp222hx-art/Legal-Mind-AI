@@ -442,122 +442,121 @@ const mainLayout = (title: string, page: string) => `
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title} - Legal-Mind AI</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>&#x2696;</text></svg>">
-  <!-- Critical: inline base styles to prevent FOUC -->
   <style>
-    html,body{margin:0;padding:0;background:#0a0a1a;color:#f3f4f6;font-family:Inter,'Noto Sans SC',system-ui,-apple-system,sans-serif;min-height:100vh;}
-    #app-loader{position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.3s ease;}
-    #app-loader .spinner{width:40px;height:40px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;}
+    html,body{margin:0;padding:0;background:#f8fafb;color:#1e293b;font-family:Inter,'Noto Sans SC',system-ui,-apple-system,sans-serif;min-height:100vh;}
+    #app-loader{position:fixed;inset:0;z-index:9999;background:#f8fafb;display:flex;align-items:center;justify-content:center;transition:opacity 0.3s ease;}
+    #app-loader .spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.7s linear infinite;}
     #app-loader.loaded{opacity:0;pointer-events:none;}
     @keyframes spin{to{transform:rotate(360deg)}}
-    #app{opacity:0;transition:opacity 0.35s ease;}
+    #app{opacity:0;transition:opacity 0.3s ease;}
     #app.ready{opacity:1;}
   </style>
-  <!-- Preload critical resources -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Main CSS first -->
   <link href="/static/css/main.css" rel="stylesheet">
-  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
-            accent: { 50:'#fdf4ff',100:'#fae8ff',200:'#f5d0fe',300:'#f0abfc',400:'#e879f9',500:'#d946ef',600:'#c026d3',700:'#a21caf',800:'#86198f',900:'#701a75' },
-            dark: { 800:'#1a1a2e',900:'#0f0f23',950:'#0a0a1a' },
-          },
           fontFamily: { sans: ['Inter', 'Noto Sans SC', 'sans-serif'] }
         }
       }
     }
   </script>
-  <!-- Non-blocking: fonts and icons loaded async -->
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
-<body class="bg-dark-950 text-gray-100 font-sans min-h-screen">
-  <!-- Loading screen: covers page until everything ready -->
+<body class="font-sans min-h-screen" style="background:#f8fafb;color:#1e293b">
   <div id="app-loader"><div class="spinner"></div></div>
   <div id="app">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-dark-900/80 backdrop-blur-xl border-r border-white/5 z-50 flex flex-col transition-transform duration-300">
-      <div class="p-5 border-b border-white/5">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
-            <i class="fas fa-scale-balanced text-white text-lg"></i>
+    <!-- Sidebar: clean white, grouped navigation -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-[230px] z-50 flex flex-col transition-transform duration-300 bg-white border-r border-gray-200/80">
+      <!-- Logo -->
+      <div class="px-5 py-5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-sm">
+            <i class="fas fa-scale-balanced text-white text-sm"></i>
           </div>
           <div>
-            <h1 class="text-lg font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">Legal-Mind</h1>
-            <p class="text-[10px] text-gray-500 tracking-wider">AI 法律智能学习平台</p>
+            <h1 class="text-[15px] font-bold text-slate-800 tracking-tight">Legal-Mind</h1>
+            <p class="text-[9px] text-slate-400 tracking-wider font-medium">AI LEARNING PLATFORM</p>
           </div>
         </div>
       </div>
-      <nav class="flex-1 py-4 px-3 overflow-y-auto space-y-1">
+
+      <nav class="flex-1 overflow-y-auto pb-4 px-1">
+        <!-- 总览 -->
+        <div class="nav-group-label">总览</div>
         <a href="/" class="nav-item" data-page="home">
-          <i class="fas fa-chart-line w-5"></i><span>数据总览</span>
+          <i class="fas fa-chart-pie nav-icon"></i><span>数据概览</span>
         </a>
+
+        <!-- AI 基础设施 -->
+        <div class="nav-group-label">AI 基础设施</div>
         <a href="/agent" class="nav-item" data-page="agent">
-          <i class="fas fa-robot w-5"></i><span>AI Agent 引擎</span>
+          <i class="fas fa-robot nav-icon"></i><span>Agent 引擎</span>
         </a>
         <a href="/rag" class="nav-item" data-page="rag">
-          <i class="fas fa-database w-5"></i><span>RAG 检索系统</span>
+          <i class="fas fa-magnifying-glass nav-icon"></i><span>RAG 检索</span>
         </a>
         <a href="/vector-db" class="nav-item" data-page="vector-db">
-          <i class="fas fa-cubes w-5"></i><span>向量数据库</span>
+          <i class="fas fa-database nav-icon"></i><span>向量数据库</span>
         </a>
         <a href="/knowledge-graph" class="nav-item" data-page="knowledge-graph">
-          <i class="fas fa-project-diagram w-5"></i><span>知识图谱</span>
+          <i class="fas fa-diagram-project nav-icon"></i><span>知识图谱</span>
         </a>
+
+        <!-- 学习成长 -->
+        <div class="nav-group-label">学习成长</div>
         <a href="/learning" class="nav-item" data-page="learning">
-          <i class="fas fa-graduation-cap w-5"></i><span>AI 学习助手</span>
+          <i class="fas fa-graduation-cap nav-icon"></i><span>AI 学习助手</span>
         </a>
         <a href="/thesis" class="nav-item" data-page="thesis">
-          <i class="fas fa-file-alt w-5"></i><span>论文辅导</span>
+          <i class="fas fa-pen-fancy nav-icon"></i><span>论文辅导</span>
         </a>
+
+        <!-- 实战就业 -->
+        <div class="nav-group-label">实战就业</div>
         <a href="/moot-court" class="nav-item" data-page="moot-court">
-          <i class="fas fa-gavel w-5"></i><span>模拟法庭</span>
+          <i class="fas fa-gavel nav-icon"></i><span>模拟法庭</span>
         </a>
         <a href="/career" class="nav-item" data-page="career">
-          <i class="fas fa-briefcase w-5"></i><span>实习就业</span>
+          <i class="fas fa-briefcase nav-icon"></i><span>实习就业</span>
         </a>
       </nav>
-      <div class="p-4 border-t border-white/5">
-        <div class="flex items-center gap-3 px-2">
-          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-sm font-bold">张</div>
+
+      <!-- User -->
+      <div class="px-4 py-3 border-t border-gray-100 mx-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">张</div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium truncate">张明远</p>
-            <p class="text-xs text-gray-500">中国政法大学</p>
+            <p class="text-xs font-medium text-slate-700 truncate">张明远</p>
+            <p class="text-[10px] text-slate-400">中国政法大学</p>
           </div>
-          <button class="text-gray-500 hover:text-gray-300"><i class="fas fa-cog"></i></button>
+          <i class="fas fa-ellipsis text-slate-300 text-xs"></i>
         </div>
       </div>
     </aside>
 
     <!-- Mobile header -->
-    <header class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-dark-900/90 backdrop-blur-xl border-b border-white/5 z-40 flex items-center px-4">
-      <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white mr-4"><i class="fas fa-bars text-lg"></i></button>
+    <header class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur border-b border-gray-200 z-40 flex items-center px-4">
+      <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800 mr-3"><i class="fas fa-bars"></i></button>
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
-          <i class="fas fa-scale-balanced text-white text-sm"></i>
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center">
+          <i class="fas fa-scale-balanced text-white text-xs"></i>
         </div>
-        <span class="font-bold text-sm bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">Legal-Mind AI</span>
+        <span class="font-bold text-sm text-slate-800">Legal-Mind AI</span>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="lg:ml-64 pt-14 lg:pt-0 min-h-screen">
-      <div id="page-content" class="p-4 lg:p-6">
-        <!-- Page content loaded here -->
+    <main class="lg:ml-[230px] pt-14 lg:pt-0 min-h-screen">
+      <div id="page-content" class="p-5 lg:p-7 max-w-[1400px]">
       </div>
     </main>
   </div>
 
-  <!-- Overlay for mobile sidebar -->
-  <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
   <!-- Chart.js loaded async, non-blocking -->
   <script>
